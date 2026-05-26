@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18158106808"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-18158106808');
+</script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PulseTrader — AI News Signals for Day Traders</title>
+<meta name="description" content="Real-time AI-powered news signals overlaid on TradingView. Catch news candles before they happen."/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0d0d0d;--paper:#f5f0e8;--cream:#ece6d8;--amber:#c8882a;--amber-light:#e8a83a;--red:#b83232;--green:#2a6644;--muted:#6b6355;--rule:#d4ccbb;--dark:#0a0a0a;--dark2:#111;--dark3:#161616}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:'Instrument Sans',sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden}
+
+/* TICKER */
+.ticker-wrap{background:var(--ink);color:var(--amber);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.05em;overflow:hidden;white-space:nowrap;padding:7px 0;position:sticky;top:0;z-index:100;border-bottom:1px solid #333}
+.ticker-inner{display:inline-block;animation:ticker 35s linear infinite}
+.ticker-inner span{margin:0 2rem}
+.t-up{color:#4caf7d}.t-down{color:#e05252}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 5vw;border-bottom:1px solid var(--rule);background:var(--paper);position:sticky;top:34px;z-index:99}
+.logo{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--ink);text-decoration:none}
+.logo span{color:var(--amber)}
+.nav-links{display:flex;gap:2rem;list-style:none;font-size:.875rem;font-weight:500}
+.nav-links a{color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
+.nav-cta{background:var(--ink)!important;color:var(--paper)!important;padding:.5rem 1.25rem;border-radius:2px;font-weight:600!important;transition:background .2s!important}
+.nav-cta:hover{background:var(--amber)!important;color:var(--ink)!important}
+
+/* HERO */
+.hero{display:grid;grid-template-columns:1fr 1fr;min-height:88vh;border-bottom:1px solid var(--rule)}
+.hero-left{padding:6rem 5vw 4rem;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--rule)}
+.eyebrow{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem}
+.live-dot{width:7px;height:7px;background:var(--red);border-radius:50%;display:inline-block;animation:blink 1.5s infinite;flex-shrink:0}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(2.8rem,5vw,4.5rem);line-height:1.08;letter-spacing:-.02em;margin-bottom:1.75rem}
+h1 em{font-style:italic;color:var(--amber)}
+.hero-sub{font-size:1.1rem;color:var(--muted);line-height:1.7;max-width:480px;margin-bottom:2.5rem}
+.hero-form{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:.85rem}
+.hero-form input{flex:1;min-width:220px;padding:.85rem 1.1rem;border:1.5px solid var(--rule);background:white;font-family:'Instrument Sans',sans-serif;font-size:.95rem;color:var(--ink);outline:none;border-radius:2px;transition:border-color .2s}
+.hero-form input:focus{border-color:var(--amber)}
+.btn-primary{background:var(--amber);color:var(--ink);border:none;padding:.85rem 1.75rem;font-family:'Instrument Sans',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;border-radius:2px;transition:background .2s,transform .15s;white-space:nowrap}
+.btn-primary:hover{background:var(--amber-light);transform:translateY(-1px)}
+.hero-note{font-size:.78rem;color:var(--muted);font-family:'DM Mono',monospace}
+.hero-right{background:var(--cream);display:flex;align-items:center;justify-content:center;padding:3rem 2rem;overflow:hidden}
+
+/* MOCK OVERLAY */
+.mock-overlay{background:var(--dark);border:1px solid #252525;border-radius:8px;width:100%;max-width:400px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.5)}
+.mock-header{background:#111;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #222}
+.mock-logo{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:#f5f0e8}
+.mock-logo span{color:var(--amber)}
+.mock-live{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#4caf7d;display:flex;align-items:center;gap:4px}
+.mock-dot{width:6px;height:6px;background:#4caf7d;border-radius:50%;animation:blink 1.5s infinite}
+.mock-ticker{background:#080808;padding:5px 14px;font-size:10px;color:var(--amber);font-family:'DM Mono',monospace;border-bottom:1px solid #1a1a1a;overflow:hidden;white-space:nowrap}
+.mock-tabs{display:flex;background:#0d0d0d;border-bottom:1px solid #1a1a1a}
+.mock-tab{flex:1;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#444;padding:8px 4px;text-align:center;font-family:'DM Mono',monospace}
+.mock-tab.active{color:var(--amber);border-bottom:2px solid var(--amber)}
+.mock-filters{background:#0d0d0d;padding:4px 14px;font-size:8px;color:#444;font-family:'DM Mono',monospace;border-bottom:1px solid #1a1a1a;letter-spacing:.08em}
+.mock-signal{padding:10px 14px;border-bottom:1px solid #171717;border-left:3px solid transparent}
+.mock-signal.energy{border-left-color:#e87c3e}
+.mock-signal.fed{border-left-color:var(--amber)}
+.mock-signal.semi{border-left-color:#3dba6e}
+.mock-sig-meta{display:flex;justify-content:space-between;margin-bottom:3px}
+.mock-sig-cat{font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#444;font-family:'DM Mono',monospace}
+.mock-sig-time{font-size:8px;color:#333;font-family:'DM Mono',monospace}
+.mock-sig-hl{font-size:11.5px;color:#d4ccbb;line-height:1.45;margin-bottom:4px;font-family:'Instrument Sans',sans-serif}
+.mock-sig-sum{font-size:9.5px;color:#6b6355;font-style:italic;margin-bottom:6px;font-family:'Instrument Sans',sans-serif}
+.mock-bar{display:flex;align-items:center;gap:8px}
+.mock-sent{font-size:8px;letter-spacing:.08em;text-transform:uppercase;width:44px;font-family:'DM Mono',monospace;font-weight:500}
+.mock-sent.bullish{color:#4caf7d}.mock-sent.bearish{color:#e05252}.mock-sent.neutral{color:#6b6355}
+.mock-track{flex:1;height:3px;background:#1e1e1e;border-radius:2px;overflow:hidden}
+.mock-fill{height:100%;border-radius:2px}
+.mock-fill.bullish{background:#4caf7d;width:78%}.mock-fill.bearish{background:#e05252;width:62%}.mock-fill.neutral{background:#4a4a42;width:45%}
+.mock-tix{font-size:8.5px;color:var(--amber);font-family:'DM Mono',monospace;font-weight:500}
+.mock-candle{display:inline-block;font-size:8px;color:var(--amber);border:1px solid #2a2a2a;background:#1a1000;padding:2px 6px;border-radius:3px;margin-top:3px;font-family:'DM Mono',monospace}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--rule)}
+.stat-cell{padding:2.5rem 3vw;border-right:1px solid var(--rule)}
+.stat-cell:last-child{border-right:none}
+.stat-num{font-family:'DM Serif Display',serif;font-size:3rem;line-height:1;color:var(--ink);margin-bottom:.4rem}
+.stat-num span{color:var(--amber)}
+.stat-desc{font-size:.875rem;color:var(--muted);line-height:1.5}
+
+/* SECTIONS */
+.section{padding:6rem 5vw}
+.section-label{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:1rem}
+.section-title{font-family:'DM Serif Display',serif;font-size:clamp(2rem,3.5vw,3rem);line-height:1.1;letter-spacing:-.02em;max-width:640px;margin-bottom:1.5rem}
+.section-body{font-size:1.05rem;color:var(--muted);max-width:560px;line-height:1.75}
+
+/* VIDEO */
+.video-section{background:var(--ink);padding:6rem 5vw;border-top:1px solid #222;border-bottom:1px solid #222}
+.video-section .section-title{color:#f5f0e8;max-width:100%}
+.video-section .section-body{color:#6b6355}
+.video-placeholder{background:#0a0a0a;border:1px solid #252525;border-radius:8px;aspect-ratio:16/9;max-width:800px;margin:3rem auto 0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .2s;position:relative;overflow:hidden}
+.video-placeholder:hover{border-color:var(--amber)}
+.play-btn{width:72px;height:72px;background:var(--amber);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform .2s}
+.video-placeholder:hover .play-btn{transform:scale(1.1)}
+.play-icon{width:0;height:0;border-left:24px solid var(--ink);border-top:14px solid transparent;border-bottom:14px solid transparent;margin-left:4px}
+.video-label{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:#444}
+
+/* FEATURES */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--rule);margin-top:4rem}
+.feature-card{padding:2.5rem;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.feature-card:nth-child(3n){border-right:none}
+.feature-icon{font-size:1.5rem;margin-bottom:1rem}
+.feature-title{font-family:'DM Serif Display',serif;font-size:1.2rem;margin-bottom:.75rem}
+.feature-body{font-size:.9rem;color:var(--muted);line-height:1.7}
+.feature-tag{display:inline-block;font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);background:rgba(200,136,42,.08);border:1px solid rgba(200,136,42,.2);padding:2px 8px;border-radius:2px;margin-top:.75rem}
+
+/* HOW */
+.how-section{background:var(--cream);padding:6rem 5vw;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:4rem;border-top:1px solid var(--rule)}
+.step{padding:2.5rem 2.5rem 2.5rem 0;border-right:1px solid var(--rule)}
+.step:last-child{border-right:none;padding-right:0;padding-left:2.5rem}
+.step:nth-child(2){padding-left:2.5rem}
+.step-num{font-family:'DM Serif Display',serif;font-size:3rem;color:var(--rule);line-height:1;margin-bottom:1rem}
+.step-title{font-family:'DM Serif Display',serif;font-size:1.2rem;margin-bottom:.75rem}
+.step-body{font-size:.9rem;color:var(--muted);line-height:1.7}
+
+/* PLATFORMS */
+.platforms-section{padding:6rem 5vw;border-bottom:1px solid var(--rule)}
+.platform-list{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:2.5rem}
+.platform-tag{background:var(--cream);border:1px solid var(--rule);padding:.6rem 1.25rem;border-radius:2px;font-family:'DM Mono',monospace;font-size:.8rem;letter-spacing:.08em;color:var(--muted)}
+
+/* PRICING */
+.pricing-section{padding:6rem 5vw;border-bottom:1px solid var(--rule)}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3.5rem;max-width:960px}
+.pricing-card{border:1.5px solid var(--rule);padding:2.5rem;border-radius:3px;position:relative;transition:border-color .2s,transform .2s}
+.pricing-card:hover{border-color:var(--amber);transform:translateY(-3px)}
+.pricing-card.featured{border-color:var(--amber);background:var(--cream)}
+.featured-tag{position:absolute;top:-1px;right:1.5rem;background:var(--amber);color:var(--ink);font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .75rem;font-weight:500}
+.plan-name{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem}
+.plan-price{font-family:'DM Serif Display',serif;font-size:2.75rem;line-height:1;margin-bottom:.25rem}
+.plan-price.free{color:var(--green)}
+.plan-price sub{font-size:1rem;font-family:'Instrument Sans',sans-serif;color:var(--muted);vertical-align:baseline}
+.plan-period{font-size:.82rem;color:var(--muted);margin-bottom:1.75rem;font-family:'DM Mono',monospace}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:.7rem;margin-bottom:2rem}
+.plan-features li{font-size:.9rem;color:var(--muted);display:flex;gap:.6rem;align-items:flex-start}
+.plan-features li::before{content:'→';color:var(--amber);flex-shrink:0;font-family:'DM Mono',monospace;font-size:.8rem;margin-top:.15rem}
+.plan-features li.no::before{content:'–';color:var(--rule)}
+.plan-features li.no{opacity:.5}
+.btn-outline{display:block;text-align:center;border:1.5px solid var(--ink);padding:.85rem;font-family:'Instrument Sans',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;background:transparent;color:var(--ink);border-radius:2px;text-decoration:none;transition:background .2s,color .2s;width:100%}
+.btn-outline:hover{background:var(--ink);color:var(--paper)}
+.btn-filled{display:block;text-align:center;background:var(--amber);border:1.5px solid var(--amber);padding:.85rem;font-family:'Instrument Sans',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;color:var(--ink);border-radius:2px;text-decoration:none;transition:background .2s;width:100%}
+.btn-filled:hover{background:var(--amber-light)}
+
+/* TESTIMONIALS */
+.testimonials{background:var(--ink);padding:6rem 5vw;border-top:1px solid #222}
+.testimonials .section-title{color:#f5f0e8}
+.testimonials .section-label{color:var(--amber)}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px;background:#1a1a1a;margin-top:3.5rem}
+.testi-card{background:#0d0d0d;padding:2rem}
+.testi-quote{font-size:1rem;color:#9e9588;line-height:1.7;font-style:italic;margin-bottom:1.25rem;font-family:'DM Serif Display',serif}
+.testi-author{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.08em;color:#444;text-transform:uppercase}
+.testi-author span{color:var(--amber)}
+
+/* CTA */
+.cta-section{background:var(--cream);padding:7rem 5vw;text-align:center;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.cta-section .section-title{margin:0 auto 1.25rem;text-align:center;max-width:700px}
+.cta-section .section-body{margin:0 auto 2.5rem;text-align:center}
+.cta-form{display:flex;justify-content:center;gap:.75rem;flex-wrap:wrap;max-width:520px;margin:0 auto}
+.cta-form input{flex:1;min-width:220px;padding:.85rem 1.1rem;border:1.5px solid var(--rule);background:white;font-family:'Instrument Sans',sans-serif;font-size:.95rem;color:var(--ink);outline:none;border-radius:2px;transition:border-color .2s}
+.cta-form input:focus{border-color:var(--amber)}
+
+/* FOOTER */
+footer{padding:2.5rem 5vw;display:flex;justify-content:space-between;align-items:center;font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);flex-wrap:wrap;gap:1rem}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--ink)}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:var(--paper);padding:.85rem 1.75rem;font-family:'DM Mono',monospace;font-size:.8rem;border-radius:2px;transition:transform .35s cubic-bezier(.34,1.56,.64,1);z-index:999;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr}.hero-right{display:none}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .features-grid{grid-template-columns:1fr}.feature-card{border-right:none}
+  .steps{grid-template-columns:1fr}
+  .step,.step:last-child,.step:nth-child(2){padding:2rem 0;border-right:none;border-bottom:1px solid var(--rule)}
+  .pricing-grid{grid-template-columns:1fr}
+  .testi-grid{grid-template-columns:1fr}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="ticker-wrap"><div class="ticker-inner">
+  <span>AAPL <span class="t-up">▲0.84%</span></span><span>TSLA <span class="t-down">▼1.22%</span></span><span>NVDA <span class="t-up">▲2.17%</span></span><span>SPY <span class="t-up">▲0.31%</span></span><span>GLD <span class="t-up">▲0.58%</span></span><span>META <span class="t-down">▼0.44%</span></span><span>VIX <span class="t-up">▲4.20%</span></span><span>QQQ <span class="t-up">▲0.72%</span></span><span>DXY <span class="t-down">▼0.19%</span></span><span>MSFT <span class="t-up">▲0.61%</span></span>
+  <span>AAPL <span class="t-up">▲0.84%</span></span><span>TSLA <span class="t-down">▼1.22%</span></span><span>NVDA <span class="t-up">▲2.17%</span></span><span>SPY <span class="t-up">▲0.31%</span></span><span>GLD <span class="t-up">▲0.58%</span></span><span>META <span class="t-down">▼0.44%</span></span><span>VIX <span class="t-up">▲4.20%</span></span><span>QQQ <span class="t-up">▲0.72%</span></span><span>DXY <span class="t-down">▼0.19%</span></span><span>MSFT <span class="t-up">▲0.61%</span></span>
+</div></div>
+
+<nav>
+  <a href="#" class="logo">Pulse<span>Trader</span></a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#download" class="nav-cta">Add to Chrome</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <p class="eyebrow"><span class="live-dot"></span>Now in Beta — Free 7-Day Trial</p>
+    <h1>Read the <em>narrative.</em><br/>Trade the move.</h1>
+    <p class="hero-sub">PulseTrader overlays real-time AI news signals directly on TradingView and every major trading platform — so you catch news candles before they happen.</p>
+    <div style="margin-bottom:.85rem">
+      <a href="https://chromewebstore.google.com/detail/pulsetrader-%E2%80%94-ai-news-sig/lbobaopbnjoloofepmpgbbklpdkgaaob" target="_blank" class="btn-primary" style="display:inline-block;text-decoration:none;font-size:1rem;padding:1rem 2rem">Add to Chrome — It's Free</a>
+    </div>
+    <p class="hero-note">No credit card. 7 days free. Cancel anytime.</p>
+  </div>
+  <div class="hero-right">
+    <div class="mock-overlay">
+      <div class="mock-header"><div class="mock-logo">Pulse<span>Trader</span></div><div class="mock-live"><div class="mock-dot"></div>Live</div></div>
+      <div class="mock-ticker">NVDA ▲2.17% &nbsp; SPY ▲0.31% &nbsp; GLD ▲0.58% &nbsp; VIX ▲4.20%</div>
+      <div class="mock-tabs"><div class="mock-tab active">Live</div><div class="mock-tab">Watchlist</div><div class="mock-tab">Earnings</div><div class="mock-tab">Press</div><div class="mock-tab">Journal</div></div>
+      <div class="mock-filters">ALL &nbsp; FED &nbsp; MACRO &nbsp; TECH &nbsp; ENERGY &nbsp; SEMI</div>
+      <div class="mock-signal energy">
+        <div class="mock-sig-meta"><span class="mock-sig-cat">ENERGY · Reuters</span><span class="mock-sig-time">2m ago</span></div>
+        <div class="mock-sig-hl">OPEC+ signals surprise output cut at weekend summit</div>
+        <div class="mock-sig-sum">Unexpected supply cut likely to spike energy prices.</div>
+        <div class="mock-bar"><span class="mock-sent bullish">bullish</span><div class="mock-track"><div class="mock-fill bullish"></div></div><span class="mock-tix">XOM CVX USO</span></div>
+        <div class="mock-candle">⚡ 72% candle</div>
+      </div>
+      <div class="mock-signal fed">
+        <div class="mock-sig-meta"><span class="mock-sig-cat">FED · Federal Reserve</span><span class="mock-sig-time">11m ago</span></div>
+        <div class="mock-sig-hl">Powell remarks suggest rate pause remains through Q3</div>
+        <div class="mock-sig-sum">Pause signals mixed — bond market may reprice short end.</div>
+        <div class="mock-bar"><span class="mock-sent neutral">neutral</span><div class="mock-track"><div class="mock-fill neutral"></div></div><span class="mock-tix">TLT DXY SPY</span></div>
+      </div>
+      <div class="mock-signal semi">
+        <div class="mock-sig-meta"><span class="mock-sig-cat">SEMI · Reuters</span><span class="mock-sig-time">34m ago</span></div>
+        <div class="mock-sig-hl">Taiwan port congestion worsens for third consecutive week</div>
+        <div class="mock-sig-sum">Ongoing disruption signals further semi supply pressure.</div>
+        <div class="mock-bar"><span class="mock-sent bearish">bearish</span><div class="mock-track"><div class="mock-fill bearish"></div></div><span class="mock-tix">NVDA TSM AMAT</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stats-row">
+  <div class="stat-cell"><div class="stat-num">4,<span>200+</span></div><div class="stat-desc">News sources scanned daily across financial, regulatory, and geopolitical feeds</div></div>
+  <div class="stat-cell"><div class="stat-num">~<span>5</span>min</div><div class="stat-desc">Average time from story breaking to signal in your feed</div></div>
+  <div class="stat-cell"><div class="stat-num">6<span>+</span></div><div class="stat-desc">Trading platforms supported — TradingView, Thinkorswim, Webull, IBKR and more</div></div>
+  <div class="stat-cell"><div class="stat-num">24<span>/7</span></div><div class="stat-desc">Cloud server runs overnight, pre-market, and after-hours — never misses a break</div></div>
+</div>
+
+<section class="video-section" id="demo">
+  <p class="section-label">See It In Action</p>
+  <h2 class="section-title">Watch PulseTrader catch a news candle in real time</h2>
+  <p class="section-body">See how a signal fires minutes before the price moves — and how traders using PulseTrader positioned ahead of the move.</p>
+  <div style="max-width:800px;margin:3rem auto 0;border-radius:8px;overflow:hidden;box-shadow:0 12px 48px rgba(0,0,0,.5)">
+    <div style="position:relative;padding-bottom:56.25%;height:0">
+      <iframe src="https://www.youtube.com/embed/jH0iVyZU0F0?rel=0&modestbranding=1&autoplay=0" 
+        style="position:absolute;top:0;left:0;width:100%;height:100%;border:none"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <p class="section-label">What's Inside</p>
+  <h2 class="section-title">Every tool a day trader needs, in one overlay</h2>
+  <p class="section-body">PulseTrader lives on top of whatever platform you already use. No new tabs. No workflow changes.</p>
+  <div class="features-grid">
+    <div class="feature-card"><div class="feature-icon">📡</div><div class="feature-title">Live Signal Feed</div><div class="feature-body">Real-time news from 24+ sources — Reuters, CNBC, Federal Reserve, SEC, FT and more — AI-scored for sentiment, strength, and news candle probability.</div><div class="feature-tag">All plans</div></div>
+    <div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-title">News Candle Alerts</div><div class="feature-body">Audio and visual alerts fire when a high-probability news candle is detected. Know before the candle prints.</div><div class="feature-tag">All plans</div></div>
+    <div class="feature-card"><div class="feature-icon">★</div><div class="feature-title">Watchlist Alerts</div><div class="feature-body">Add your tickers and get alerts only when news hits your positions. Filter the feed or alert-only mode.</div><div class="feature-tag">Trader + Pro</div></div>
+    <div class="feature-card"><div class="feature-icon">📅</div><div class="feature-title">Earnings Calendar</div><div class="feature-body">AI-generated earnings calendar showing what's reporting this week, analyst estimates, and what to watch — with your watchlist tickers highlighted.</div><div class="feature-tag">Trader + Pro</div></div>
+    <div class="feature-card"><div class="feature-icon">📹</div><div class="feature-title">Press Conference Scanner</div><div class="feature-body">Automatically monitors Fed speeches, earnings calls, and major press conferences on YouTube. Transcribes and analyzes them in real time.</div><div class="feature-tag">Pro only</div></div>
+    <div class="feature-card"><div class="feature-icon">🎯</div><div class="feature-title">Signal Accuracy Tracker</div><div class="feature-body">Every signal is tracked. 60 minutes after it fires, we check what the price did. See your win rate, average move, and which categories perform best.</div><div class="feature-tag">Pro only</div></div>
+    <div class="feature-card"><div class="feature-icon">🧠</div><div class="feature-title">AI Digest</div><div class="feature-body">One unbiased AI-written summary per sector — Fed, energy, tech, macro — so you understand the overall narrative without reading 50 headlines.</div><div class="feature-tag">Trader + Pro</div></div>
+    <div class="feature-card"><div class="feature-icon">📓</div><div class="feature-title">Trade Journal</div><div class="feature-body">Log entries and exits with notes and catalyst context. Track P&L per trade and review what news drove your best and worst calls.</div><div class="feature-tag">Trader + Pro</div></div>
+    <div class="feature-card"><div class="feature-icon">🌅</div><div class="feature-title">Pre-Market Briefing</div><div class="feature-body">Every morning between 7–9:30 AM, a daily briefing shows overnight signal count, top headlines, and what sectors to watch before the open.</div><div class="feature-tag">Trader + Pro</div></div>
+  </div>
+</section>
+
+<section class="how-section" id="how">
+  <p class="section-label">How It Works</p>
+  <h2 class="section-title">From breaking story to signal in minutes</h2>
+  <p class="section-body">PulseTrader doesn't try to beat algorithms. It helps you understand what a story means before the broader market has fully digested it.</p>
+  <div class="steps">
+    <div class="step"><div class="step-num">01</div><div class="step-title">Continuous Scanning</div><div class="step-body">Our cloud server monitors 24+ RSS feeds, SEC filings, Fed speeches, and YouTube press conferences — around the clock, every 5 minutes.</div></div>
+    <div class="step"><div class="step-num">02</div><div class="step-title">AI Analysis</div><div class="step-body">Each story is scored by Claude AI for sentiment, strength, and news candle probability. Complex stories get a plain-English summary of what it means.</div></div>
+    <div class="step"><div class="step-num">03</div><div class="step-title">Signal in Your Overlay</div><div class="step-body">Signals push directly to your overlay via WebSocket in real time. High-probability candle alerts fire audio and visual notifications instantly.</div></div>
+  </div>
+</section>
+
+<section class="platforms-section">
+  <p class="section-label">Works On</p>
+  <h2 class="section-title">Your platform, enhanced</h2>
+  <p class="section-body">PulseTrader overlays on top of any trading platform in your browser. No switching tabs, no workflow changes.</p>
+  <div class="platform-list">
+    <div class="platform-tag">TradingView</div>
+    <div class="platform-tag">Thinkorswim Web</div>
+    <div class="platform-tag">Webull</div>
+    <div class="platform-tag">Interactive Brokers</div>
+    <div class="platform-tag">Tastyworks</div>
+    <div class="platform-tag">Any browser-based platform</div>
+  </div>
+</section>
+
+
+<section style="background:var(--ink);padding:4rem 5vw;text-align:center;border-bottom:1px solid #222">
+  <p style="font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:1rem">Available Now</p>
+  <h2 style="font-family:'DM Serif Display',serif;font-size:2rem;color:#f5f0e8;margin-bottom:1rem">Add PulseTrader to Chrome</h2>
+  <p style="color:#6b6355;font-size:1rem;margin-bottom:2rem;max-width:480px;margin-left:auto;margin-right:auto">Free 7-day trial. Works on TradingView, Thinkorswim, Webull and more.</p>
+  <a href="https://chromewebstore.google.com/detail/pulsetrader-%E2%80%94-ai-news-sig/lbobaopbnjoloofepmpgbbklpdkgaaob" id="download-btn" target="_blank" style="display:inline-block;background:var(--amber);color:var(--ink);padding:1rem 2.5rem;font-family:'Instrument Sans',sans-serif;font-weight:600;font-size:1rem;border-radius:2px;text-decoration:none;transition:background .2s">Add to Chrome — It's Free</a>
+  <p style="color:#444;font-size:.75rem;font-family:'DM Mono',monospace;margin-top:1rem">Chrome extension · No credit card required</p>
+</section>
+
+<section class="pricing-section" id="pricing">
+  <p class="section-label">Pricing</p>
+  <h2 class="section-title">Simple pricing. Cancel anytime.</h2>
+  <p class="section-body">Start free. Upgrade when you're ready. Early access members lock in the launch rate forever.</p>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="plan-name">Free Trial</div>
+      <div class="plan-price free">$0</div>
+      <div class="plan-period">7 days · no credit card</div>
+      <ul class="plan-features">
+        <li>Live signal feed</li>
+        <li>News candle alerts</li>
+        <li>5 color themes</li>
+        <li>Works on all platforms</li>
+        <li class="no">Watchlist alerts</li>
+        <li class="no">Earnings calendar</li>
+        <li class="no">Trade journal</li>
+      </ul>
+      <a href="#waitlist" class="btn-outline">Start Free Trial</a>
+    </div>
+    <div class="pricing-card featured">
+      <div class="featured-tag">Most Popular</div>
+      <div class="plan-name">Trader</div>
+      <div class="plan-price">$20<sub>/mo</sub></div>
+      <div class="plan-period">or $179/yr · save 26%</div>
+      <ul class="plan-features">
+        <li>Everything in Free</li>
+        <li>Watchlist alerts</li>
+        <li>Earnings calendar</li>
+        <li>AI Digest per sector</li>
+        <li>Trade journal + P&L</li>
+        <li>Pre-market briefing</li>
+        <li>30-day signal archive</li>
+      </ul>
+      <a href="#waitlist" class="btn-filled">Get Early Access</a>
+    </div>
+    <div class="pricing-card">
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">$50<sub>/mo</sub></div>
+      <div class="plan-period">or $449/yr · save 25%</div>
+      <ul class="plan-features">
+        <li>Everything in Trader</li>
+        <li>Press conference scanner</li>
+        <li>Signal accuracy tracker</li>
+        <li>Full 12-month archive</li>
+        <li>Priority signal delivery</li>
+        <li>Early access to new features</li>
+      </ul>
+      <a href="#waitlist" class="btn-outline">Get Early Access</a>
+    </div>
+  </div>
+  <p style="font-size:.78rem;color:var(--muted);font-family:'DM Mono',monospace;margin-top:1.5rem">* Pricing subject to change. Waitlist members receive guaranteed early-member rate at launch.</p>
+</section>
+
+<section class="testimonials">
+  <p class="section-label">Early Users</p>
+  <h2 class="section-title">Built for traders who think, not just react</h2>
+  <div class="testi-grid">
+    <div class="testi-card"><div class="testi-quote">"The press conference scanner caught a Fed speech 8 minutes before my usual news source. That's the whole game."</div><div class="testi-author">Beta User · <span>Day Trader, 6 years</span></div></div>
+    <div class="testi-card"><div class="testi-quote">"I used to have 4 tabs open just for news. Now I have one overlay. The watchlist alerts alone are worth it."</div><div class="testi-author">Beta User · <span>Options Trader</span></div></div>
+    <div class="testi-card"><div class="testi-quote">"The AI Digest gives me a real read on macro before I touch anything. Cleaner than any Bloomberg terminal I've used."</div><div class="testi-author">Beta User · <span>Macro Trader</span></div></div>
+  </div>
+</section>
+
+<section class="cta-section" id="download">
+  <p class="section-label" style="text-align:center">Available Now</p>
+  <h2 class="section-title">Start trading smarter today.</h2>
+  <p class="section-body">Free 7-day trial. No credit card required. Works on TradingView, Thinkorswim, Webull and more.</p>
+  <div style="display:flex;justify-content:center">
+    <a href="https://chromewebstore.google.com/detail/pulsetrader-%E2%80%94-ai-news-sig/lbobaopbnjoloofepmpgbbklpdkgaaob" target="_blank" class="btn-primary" style="display:inline-block;text-decoration:none;font-size:1rem;padding:1rem 2.5rem">Add to Chrome — It's Free</a>
+  </div>
+  <p style="text-align:center;font-size:.78rem;color:var(--muted);font-family:'DM Mono',monospace;margin-top:1rem">Chrome extension · Then $20/mo Basic or $50/mo Pro</p>
+</section>
+
+<footer>
+  <span><a href="#">Pulse<strong>Trader</strong></a> &mdash; &copy; 2026. All rights reserved.</span>
+  <span>Built for traders who read. Not traders who react.</span>
+  <span><a href="#">Privacy</a> &middot; <a href="#">Terms</a> &middot; <a href="mailto:hello@pulsetrader.io">Contact</a></span>
+</footer>
+
+
+
+<script>
+function handleSignup(id) {
+  var input = document.getElementById(id);
+  var email = input.value.trim();
+  if (!email || !email.includes('@')) {
+    input.style.borderColor = '#b83232';
+    input.focus();
+    setTimeout(function(){ input.style.borderColor = ''; }, 1500);
+    return;
+  }
+  // Submit to Google Forms
+  var formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScWkVLxyWFb9MbYlNtfFENgwOxyvJd7MPQcmU5Uq6hhZCZ_CA/formResponse';
+  fetch(formUrl, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'entry.1366776446=' + encodeURIComponent(email)
+  });
+  input.value = '';
+  input.style.borderColor = '#2a6644';
+  setTimeout(function(){ input.style.borderColor = ''; }, 2000);
+  var t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3500);
+}
+document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+  a.addEventListener('click', function(e) {
+    var target = document.querySelector(a.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+</script>
+</body>
+</html>
